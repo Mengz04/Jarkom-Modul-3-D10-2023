@@ -511,22 +511,23 @@ Generic Hash
 
 ### Grafik
 Round Robin
-![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/fb76e15f-284d-4b32-8cec-50037590d84a)
+![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/fb76e15f-284d-4b32-8cec-50037590d84a)  
 Request per second = 762.70
 
 Least-connection
-![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/ed96a74e-47b2-434e-b67e-d55e4925fb15)
+![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/ed96a74e-47b2-434e-b67e-d55e4925fb15)  
 Request per second = 1000.14
 
 IP Hash
-![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/321cde3a-60e1-4ece-a7d3-478e2631f5b5)
+![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/321cde3a-60e1-4ece-a7d3-478e2631f5b5)  
+
 Request per second = 1065.77
 
 Generic Hash
-![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/b292ada7-7924-4772-9408-68f4f242029b)
+![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/b292ada7-7924-4772-9408-68f4f242029b)  
 Request per second = 983.34
 
-![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/f0974edf-57a4-4c40-a323-a35c89b17c8e)
+![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/f0974edf-57a4-4c40-a323-a35c89b17c8e)  
 
 ### Analisis
 Berdasarkan grafik yang request per second masing-masing algoritma load balancing, dapat disimpulkan bahwa IP Hash lebih baik dibandingkan algoritma yang lain.
@@ -574,3 +575,418 @@ lynx 192.196.2.2
 ### Output
 ![image](https://github.com/kenanargya/Jarkom-Modul-2-D10-2023/assets/92387421/818c50dc-4e00-49ff-a45e-ee7caf3ea9d7)
 ![image](https://github.com/kenanargya/Jarkom-Modul-2-D10-2023/assets/92387421/b6f8b81f-4480-4f93-8bf8-3fea4b3cd456)
+
+## 11. Lalu buat untuk setiap request yang mengandung /its akan di proxy passing menuju halaman https://www.its.ac.id.
+
+### Penyelesaian
+Menambahkan konfigurasi tambahan nginx untuk its.ac.id
+
+```sh
+location /its {
+        proxy_pass https://www.its.ac.id;
+
+        auth_basic "Administrator'\''s Area";
+        auth_basic_user_file /etc/nginx/rahasiakita/.htpasswd;
+    }
+```
+
+```sh
+lynx 192.196.2.2/its
+```
+
+### Output
+![image](https://github.com/kenanargya/Jarkom-Modul-2-D10-2023/assets/92387421/e08a72e3-f813-4dea-b98e-fe8e8fa63c43)
+
+## 12. LB ini hanya boleh diakses oleh client dengan IP 192.196.3.69, 192.196.3.70, 192.196.4.167, dan 192.196.4.168.
+
+### Penyelesaian
+Penambahan konfigurasi nginx pada Load Balancer Eisen.
+
+```sh
+location / {
+        allow 192.196.3.69;
+        allow 192.196.3.70;
+        allow 192.196.4.167;
+        allow 192.196.4.168;
+        deny all;
+}
+```
+```sh
+echo '
+upstream backend  {
+    server 192.196.3.1 weight=4; #IP Lugner
+    server 192.196.3.2 weight=2; #IP Linie
+    server 192.196.3.3 weight=1; #IP Lawine
+}
+
+server {
+    listen 80;
+    server_name granz.channel.d10.com;
+
+    location / {
+        allow 192.196.3.69;
+        allow 192.196.3.70;
+        allow 192.196.4.167;
+        allow 192.196.4.168;
+        deny all;
+
+        proxy_pass http://backend;
+        proxy_set_header    X-Real-IP $remote_addr;
+        proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header    Host $http_host;
+
+        auth_basic "Administrator'\''s Area";
+        auth_basic_user_file /etc/nginx/rahasiakita/.htpasswd;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+    location /its {
+        allow 192.196.3.69;
+        allow 192.196.3.70;
+        allow 192.196.4.167;
+        allow 192.196.4.168;
+        deny all;
+        
+        proxy_pass https://www.its.ac.id;
+
+        auth_basic "Administrator'\''s Area";
+        auth_basic_user_file /etc/nginx/rahasiakita/.htpasswd;
+    }
+
+    error_log /var/log/nginx/lb_error.log;
+    access_log /var/log/nginx/lb_access.log;
+
+}
+' > /etc/nginx/sites-available/lb-granz.channel.d10
+```
+
+## 13. Konfigurasi Denken dan harus dapat diakses oleh Frieren, Flamme, dan Fern.
+
+### Penyelesaian
+Melakukan beberapa konfigurasi pada Database Server Denken.
+
+```sh
+echo '
+[client-server]
+
+!includedir /etc/mysql/conf.d/
+!includedir /etc/mysql/mariadb.conf.d/
+
+[mysqld]
+skip-networking=0
+skip-bind-address
+' > /etc/mysql/my.cnf
+```
+
+```sh
+echo '
+bind-address            = 0.0.0.0
+service mysql restart
+' > /etc/mysql/mariadb.conf.d/50-server.cnf
+```
+Kemudian tambahkan pada sql
+
+```sql
+mysql <<EOF
+CREATE USER 'kelompokd10'@'%' IDENTIFIED BY 'passwordd10';
+CREATE USER 'kelompokd10'@'localhost' IDENTIFIED BY 'passwordd10';
+CREATE DATABASE dbkelompokd10;
+GRANT ALL PRIVILEGES ON *.* TO 'kelompokd10'@'%';
+GRANT ALL PRIVILEGES ON *.* TO 'kelompokd10'@'localhost';
+FLUSH PRIVILEGES;
+EOF
+```
+
+### Output
+![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/dad20ffc-3ea4-4880-8c4a-b5300fac0495)
+
+## 14. Laravel worker memiliki Riegel Channel sesuai dengan quest guide berikut. Jangan lupa melakukan instalasi PHP8.0 dan Composer
+
+### Penyelesaian
+Melakukan instalasi composer dan PHP 8.0 terlebih dahulu.
+
+```sh
+wget https://getcomposer.org/download/2.0.13/composer.phar
+chmod +x composer.phar
+mv composer.phar /usr/bin/composer
+
+apt-get install -y lsb-release ca-certificates apt-transport-https software-properties-common gnupg2
+
+curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
+
+sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
+
+apt-get install php8.0-mbstring php8.0-xml php8.0-cli php8.0-common php8.0-intl php8.0-opcache php8.0-readline php8.0-mysql php8.0-fpm php8.0-curl unzip wget -y
+```
+Kemudian lakukan cloning pada resource github yang diminta.
+
+```sh
+apt-get install git -y
+cd /var/www
+git clone https://github.com/martuafernando/laravel-praktikum-jarkom.git
+cd laravel-praktikum-jarkom
+composer update
+```
+
+Setelah melakukan cloning, lakukan konfigurasi database pada masing-masing worker.
+```sh
+cp .env.example .env
+
+echo '
+APP_NAME=Laravel
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost
+
+LOG_CHANNEL=stack
+LOG_DEPRECATIONS_CHANNEL=null
+LOG_LEVEL=debug
+
+DB_CONNECTION=mysql
+DB_HOST=192.196.2.1
+DB_PORT=3306
+DB_DATABASE=dbkelompokd10
+DB_USERNAME=kelompokd10
+DB_PASSWORD=passwordd10
+
+BROADCAST_DRIVER=log
+CACHE_DRIVER=file
+FILESYSTEM_DISK=local
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+
+MEMCACHED_HOST=127.0.0.1
+
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+MAIL_MAILER=smtp
+MAIL_HOST=mailpit
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+AWS_USE_PATH_STYLE_ENDPOINT=false
+
+PUSHER_APP_ID=
+PUSHER_APP_KEY=
+PUSHER_APP_SECRET=
+PUSHER_HOST=
+PUSHER_PORT=443
+PUSHER_SCHEME=https
+PUSHER_APP_CLUSTER=mt1
+
+VITE_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+VITE_PUSHER_HOST="${PUSHER_HOST}"
+VITE_PUSHER_PORT="${PUSHER_PORT}"
+VITE_PUSHER_SCHEME="${PUSHER_SCHEME}"
+VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+' > .env
+
+php artisan key:generate
+
+php artisan config:cache
+
+php artisan migrate
+
+php artisan db:seed
+
+php artisan storage:link
+
+php artisan jwt:secret
+
+php artisan config:clear
+```
+Kemudian lakukan konfigurasi nginx pada masing-masing worker.
+
+```sh
+server {
+
+    listen [PORT];
+
+    root /var/www/laravel-praktikum-jarkom/public;
+
+    index index.php index.html index.htm;
+    server_name _;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # pass PHP scripts to FastCGI server
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.0-fpm.sock;
+    }
+
+    location ~ /\.ht {
+            deny all;
+    }
+
+    error_log /var/log/nginx/riegel.canyon.d10_error.log;
+    access_log /var/log/nginx/riegel.canyon.d10_access.log;
+}
+' > /etc/nginx/sites-available/riegel.canyon.d10
+
+ln -s /etc/nginx/sites-available/riegel.canyon.d10 /etc/nginx/sites-enabled/
+```
+
+### Command
+```sh
+lynx localhost:[PORT]
+```
+
+### Output
+![WhatsApp Image 2023-11-19 at 20 34 29_8947d342](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/c8b51930-4b72-4b9c-8c68-2bc191792c83)
+
+## 15. Riegel Channel memiliki beberapa endpoint yang harus ditesting sebanyak 100 request dengan 10 request/second. Tambahkan response dan hasil testing pada grimoire. 
+POST /auth/register
+
+### Penyelesaian
+Melakukan testing menggunakan file .json.
+
+```sh
+echo '{"username": "testd10", "password": "testd10"}' > temp.json
+```
+
+### Output
+![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/0dfebb61-38b8-4bfe-b8be-3b8007f5f553)
+
+
+## 16. POST /auth/login
+
+### Output
+![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/cb47f9bb-b4e0-4793-bb40-f38833033abe)
+
+## 17. GET /me.
+
+### Penyelesaian
+```sh
+curl -X POST -H "Content-Type: application/json" -d @temp.json http://192.196.4.1:8001/api/auth/login > token.txt
+```
+
+### Output
+![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/00c87937-d578-4abb-9d79-7263b2499fc7)
+
+## 18. implementasikan Proxy Bind pada Eisen untuk mengaitkan IP dari Frieren, Flamme, dan Fern.
+
+### Penyelesaian
+Menambahkan konfigurasi nginx berikut dengan port yang sesuai.
+
+```sh
+echo '
+upstream backendriegel {
+    least_conn;
+    server 192.196.4.1:8001; #IP Fern
+    server 192.196.4.2:8002; #IP Flamme
+    server 192.196.4.3:8003; #IP Frieren
+}
+
+server {
+    listen 81;
+    server_name riegel.canyon.d10.com;
+
+    location / {
+        proxy_bind 192.196.2.2;
+
+        proxy_pass http://backendriegel;
+        proxy_set_header    X-Real-IP $remote_addr;
+        proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header    Host $http_host;
+    }  
+
+    error_log /var/log/nginx/lb_error.log;
+    access_log /var/log/nginx/lb_access.log;
+
+}
+' > /etc/nginx/sites-available/lb-riegel.canyon.d10
+
+unlink /etc/nginx/sites-enabled/default
+
+ln -s /etc/nginx/sites-available/lb-granz.channel.d10 /etc/nginx/sites-enabled
+
+ln -s /etc/nginx/sites-available/lb-riegel.canyon.d10 /etc/nginx/sites-enabled
+```
+
+## 19. Untuk meningkatkan performa dari Worker, coba implementasikan PHP-FPM pada Frieren, Flamme, dan Fern. Untuk testing kinerja naikkan 
+- pm.max_children
+- pm.start_servers
+- pm.min_spare_servers
+- pm.max_spare_servers
+sebanyak tiga percobaan dan lakukan testing sebanyak 100 request dengan 10 request/second kemudian berikan hasil analisisnya pada Grimoire.
+
+### Penyelesaian
+Konfigurasi pada masing-masing worker.
+
+```sh
+echo '
+[www]
+user = www-data
+group = www-data
+listen = /run/php/php8.0-fpm.sock
+listen.owner = www-data
+listen.group = www-data
+php_admin_value[disable_functions] = exec,passthru,shell_exec,system
+php_admin_flag[allow_url_fopen] = off
+
+; Choose how the process manager will control the number of child processes.
+
+pm = dynamic
+pm.max_children = 50
+pm.start_servers = 10
+pm.min_spare_servers = 5
+pm.max_spare_servers = 20
+' > /etc/php/8.0/fpm/pool.d/www.conf
+
+```
+
+## 20. implementasikan Least-Conn pada Eisen. Untuk testing kinerja dari worker tersebut dilakukan sebanyak 100 request dengan 10 request/second.
+
+### Penyelesaian
+Penambahan algoritma least-connection pada Load Balancer.
+
+```sh
+echo '
+upstream backendriegel {
+    least_conn;
+    server 192.196.4.1:8001; #IP Fern
+    server 192.196.4.2:8002; #IP Flamme
+    server 192.196.4.3:8003; #IP Frieren
+}
+
+server {
+    listen 81;
+    server_name riegel.canyon.d10.com;
+
+    location / {
+        proxy_bind 192.196.2.2;
+
+        proxy_pass http://backendriegel;
+        proxy_set_header    X-Real-IP $remote_addr;
+        proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header    Host $http_host;
+    }  
+
+    error_log /var/log/nginx/lb_error.log;
+    access_log /var/log/nginx/lb_access.log;
+
+}
+' > /etc/nginx/sites-available/lb-riegel.canyon.d10
+```
+
+### Output
+![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/6095fea7-04fa-46f9-bc70-e776cf5a40f7)
+
