@@ -8,7 +8,7 @@
 ## 1. Konfigurasi DHCP dan melakukan register domain berupa riegel.canyon.yyy.com untuk worker Laravel dan granz.channel.yyy.com untuk worker PHP
 
 ### Topologi
-![WhatsApp Image 2023-11-14 at 18 05 04_37236602](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/a31eb205-89e5-4112-bd46-5528956efcb7)
+![WhatsApp Image 2023-11-14 at 18 05 03_2b682218](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/a47fdeb8-6f22-4c35-a6eb-fe6b872d296b)
 
 #### **Aura** (DHCP Relay)
 ```
@@ -36,6 +36,7 @@ iface eth4 inet static
 	address 192.196.4.0
 	netmask 255.255.255.0
 ```
+
 #### **Himmel** (DHCP Server)
 ```
 auto eth0
@@ -497,33 +498,33 @@ ab -n 1000 -c 100 http://granz.channel.d10.com/
 ab -n 200 -c 10 http://granz.channel.d10.com/ 
 ```
 ### Output
-Round Robin
+* Round Robin  
 ![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/3bfa7849-6fae-41f4-82c3-bf97e896ce94)
 
-Least-connection
+* Least-connection  
 ![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/b92ec1a1-5167-4e56-a9e9-09d5d18f2ee9)
 
-IP Hash
+* IP Hash  
 ![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/a4853c2a-cca6-48d6-b5ed-cdad9ab6764b)
 
-Generic Hash
+* Generic Hash  
 ![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/d8c97d37-7d7a-4e53-98c5-6e2729faecd0)
 
 ### Grafik
-Round Robin
+* Round Robin  
 ![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/fb76e15f-284d-4b32-8cec-50037590d84a)  
 Request per second = 762.70
 
-Least-connection
+* Least-connection   
 ![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/ed96a74e-47b2-434e-b67e-d55e4925fb15)  
 Request per second = 1000.14
 
-IP Hash
+* IP Hash  
 ![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/321cde3a-60e1-4ece-a7d3-478e2631f5b5)  
 
 Request per second = 1065.77
 
-Generic Hash
+* Generic Hash  
 ![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/b292ada7-7924-4772-9408-68f4f242029b)  
 Request per second = 983.34
 
@@ -538,15 +539,15 @@ Berdasarkan grafik yang request per second masing-masing algoritma load balancin
 Melakukan testing pada Load Balancer dengan menggunakan 1 worker, 2 worker, 3 worker.
 
 ### Output
-Tiga Worker
+* Tiga Worker  
 ![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/fc415028-ff25-4cfb-88fd-f09b15056ee0)
 ![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/18a5d098-5fcd-4e05-8276-f9ed86b83984)
 
-Dua Worker
+* Dua Worker  
 ![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/c6d096f6-3e0d-4b06-a927-3f0b80f5c4db)
 ![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/af6ea31f-c2f1-4410-8f1a-add29b7ce0d7)
 
-Satu Worker
+* Satu Worker  
 ![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/0cccfb19-d61c-4ff3-bc06-4ca7e232a673)
 ![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/4dd70be6-fc73-4f95-9cc0-baa67f3edc7a)
 
@@ -590,6 +591,7 @@ location /its {
     }
 ```
 
+### Command
 ```sh
 lynx 192.196.2.2/its
 ```
@@ -950,8 +952,11 @@ pm.start_servers = 10
 pm.min_spare_servers = 5
 pm.max_spare_servers = 20
 ' > /etc/php/8.0/fpm/pool.d/www.conf
-
 ```
+
+### Output
+![image](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/fa7f3896-868e-4fdd-87cc-585533fe7c46)
+
 
 ## 20. implementasikan Least-Conn pada Eisen. Untuk testing kinerja dari worker tersebut dilakukan sebanyak 100 request dengan 10 request/second.
 
