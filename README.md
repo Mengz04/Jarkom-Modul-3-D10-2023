@@ -447,7 +447,6 @@ service nginx restart
 ![image](https://github.com/kenanargya/Jarkom-Modul-2-D10-2023/assets/92387421/4067116d-5d06-432f-8f88-259bd65da945)
 
 ## 7. Konfigurasi Eisen lalu lakukan testing dengan 1000 request dan 100 request/second
-ab -n 1000 -c 100 http://granz.channel.d10.com/
 
 ### Penyelesaian
 Pertama jangan lupa untuk melakukan konfigurasi pada DNS Server untuk mengarahkan domain pada IP Load Balancer Eisen. Kemudian lakukan konfigurasi pada Eisen.
