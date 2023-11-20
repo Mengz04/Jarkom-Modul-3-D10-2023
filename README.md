@@ -277,7 +277,7 @@ subnet 192.196.3.0 netmask 255.255.255.0 {
 }
 ```
 
-## 3. Setting CLIENT Switch3 dengan range IP 192.196.4.12 - 192.196.4.20 dan 192.196.4.160 - 192.196.4.168
+## 3. Setting CLIENT Switch4 dengan range IP 192.196.4.12 - 192.196.4.20 dan 192.196.4.160 - 192.196.4.168
 
 ### Penyelesaian
 ```sh
