@@ -5,8 +5,6 @@
 | Muhammad Rafi Insan Fillah | 5025211169  |
 | Ken Anargya Alkausar | 5025211168  |
 
-## 1. Konfigurasi DHCP dan melakukan register domain berupa riegel.canyon.yyy.com untuk worker Laravel dan granz.channel.yyy.com untuk worker PHP
-
 ### Topologi
 ![WhatsApp Image 2023-11-14 at 18 05 03_2b682218](https://github.com/Mengz04/Jarkom-Modul-3-D10-2023/assets/92387421/a47fdeb8-6f22-4c35-a6eb-fe6b872d296b)
 
@@ -131,6 +129,8 @@ iface eth0 inet dhcp
 auto eth0
 iface eth0 inet dhcp
 ```
+
+## 1. Konfigurasi DHCP dan melakukan register domain berupa riegel.canyon.yyy.com untuk worker Laravel dan granz.channel.yyy.com untuk worker PHP
 
 ### Penyelesaian
 Konfigurasi pada DNS Server Heiter
